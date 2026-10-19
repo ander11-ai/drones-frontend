@@ -53,7 +53,7 @@ function App() {
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
       <header style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1>🚁 Tienda de Drones</h1>
+        <h1> Tienda de Drones</h1>
         <p>Sistema de gestión de inventario y clientes</p>
       </header>
 
