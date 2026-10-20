@@ -96,8 +96,8 @@ function App() {
       {/* Header y Barra de Usuario */}
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '20px', marginBottom: '30px' }}>
         <div>
-          <h1>Tienda de Drones 🛸</h1>
-          <p>Stock exclusivo y predeterminado</p>
+          <h1>VANT Shop</h1>
+          <p>Los mejores drones de ultima generacion</p>
         </div>
 
         {/* Zona de Login / Usuario */}
