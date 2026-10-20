@@ -4,7 +4,7 @@ import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const obtenerImagenDron = (nombre) => {
+  const obtenerImagenDron = (nombre) => {
   const nombreLower = (nombre || '').toLowerCase();
   
   if (nombreLower.includes('phantom')) {
@@ -13,7 +13,7 @@ const obtenerImagenDron = (nombre) => {
     return '/mavic.jpg';
   } else if (nombreLower.includes('fpv') || nombreLower.includes('racer') || nombreLower.includes('avata')) {
     return '/fpv.jpg';
-  } else if (nombreLower.includes('dron-d') || nombreLower.includes('d')) {
+  } else if (nombreLower.includes('dron-d') || nombreLower.includes('dron d')) {
     return '/dron-d.jpg';
   } else {
     return '/dron-default.jpg';
