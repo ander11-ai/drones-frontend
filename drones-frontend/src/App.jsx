@@ -4,18 +4,19 @@ import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-// Funcion auxiliar para asignar una imagen profesional segun el tipo de dron
 const obtenerImagenDron = (nombre) => {
   const nombreLower = (nombre || '').toLowerCase();
   
   if (nombreLower.includes('phantom')) {
-    return 'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=500&auto=format&fit=crop';
+    return '/phantom.jpg';
   } else if (nombreLower.includes('mavic')) {
-    return 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=500&auto=format&fit=crop';
+    return '/mavic.jpg';
   } else if (nombreLower.includes('fpv') || nombreLower.includes('racer') || nombreLower.includes('avata')) {
-    return 'https://images.unsplash.com/photo-1519074069444-1ba4ea16d66c?w=500&auto=format&fit=crop';
+    return '/fpv.jpg';
+  } else if (nombreLower.includes('dron-d') || nombreLower.includes('d')) {
+    return '/dron-d.jpg';
   } else {
-    return 'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=500&auto=format&fit=crop';
+    return '/dron-default.jpg';
   }
 };
 
