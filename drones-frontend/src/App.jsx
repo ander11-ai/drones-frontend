@@ -4,12 +4,25 @@ import './App.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+// Funcion auxiliar para asignar una imagen profesional segun el tipo de dron
+const obtenerImagenDron = (nombre) => {
+  const nombreLower = nombre.toLowerCase();
+  if (nombreLower.includes('phantom')) {
+    return 'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=600&auto=format&fit=crop';
+  } else if (nombreLower.includes('mavic')) {
+    return 'https://images.unsplash.com/photo-1579829366248-204fe84172f1?q=80&w=600&auto=format&fit=crop';
+  } else if (nombreLower.includes('fpv') || nombreLower.includes('racer')) {
+    return 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?q=80&w=600&auto=format&fit=crop';
+  } else {
+    return 'https://images.unsplash.com/photo-1519074069444-1ba4ea16d66c?q=80&w=600&auto=format&fit=crop';
+  }
+};
+
 function App() {
   const [drones, setDrones] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados para autenticación del cliente
-  const [usuarioLogueado, setUsuarioLogueado] = useState(null); // Guarda el objeto del cliente actual
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
   const [emailInput, setEmailInput] = useState('');
   const [nombreInput, setNombreInput] = useState('');
   const [modoRegistro, setModoRegistro] = useState(false);
@@ -30,7 +43,6 @@ function App() {
     }
   };
 
-  // Manejar Inicio de Sesion buscando el email en la BD
   const manejarLogin = async (e) => {
     e.preventDefault();
     try {
@@ -39,7 +51,6 @@ function App() {
       
       if (clienteEncontrado) {
         setUsuarioLogueado(clienteEncontrado);
-        alert(`Bienvenido de nuevo, ${clienteEncontrado.nombre}`);
       } else {
         alert('Correo no encontrado. Por favor registrate.');
         setModoRegistro(true);
@@ -49,12 +60,10 @@ function App() {
     }
   };
 
-  // Manejar Registro de Nuevo Cliente
   const manejarRegistro = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/clientes`, { nombre: nombreInput, email: emailInput });
-      // Suponiendo que el backend devuelve el cliente o su ID, o volvemos a consultar
+      await axios.post(`${API_URL}/clientes`, { nombre: nombreInput, email: emailInput });
       alert('Cuenta creada con exito. Inicia sesion ahora.');
       setModoRegistro(false);
       setNombreInput('');
@@ -64,17 +73,16 @@ function App() {
     }
   };
 
-  // Funcion de Compra vinculada a la tabla ventas
   const comprarDron = async (dron) => {
     if (!usuarioLogueado) {
-      alert('Por favor inicia sesion arriba para poder realizar una compra.');
+      alert('Por favor inicia sesion para poder realizar una compra.');
       return;
     }
 
     const confirmacion = window.confirm(`Deseas comprar el dron ${dron.nombre} por $${dron.precio}?`);
     if (!confirmacion) return;
 
-    const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const fechaActual = new Date().toISOString().split('T')[0];
 
     try {
       await axios.post(`${API_URL}/ventas`, {
@@ -91,62 +99,64 @@ function App() {
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
+    <div className="container">
       
-      {/* Header y Barra de Usuario */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ddd', paddingBottom: '20px', marginBottom: '30px' }}>
+      <header>
         <div>
           <h1>VANT Shop</h1>
-          <p>Los mejores drones de ultima generacion</p>
+          <p>Los mejores drones de ultima generacion con stock exclusivo</p>
         </div>
 
-        {/* Zona de Login / Usuario */}
-        <div style={{ background: '#f4f4f9', padding: '15px', borderRadius: '8px' }}>
+        <div className="auth-panel">
           {usuarioLogueado ? (
             <div>
-              <p>Hola, <strong>{usuarioLogueado.nombre}</strong></p>
-              <button onClick={() => setUsuarioLogueado(null)} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+              <p style={{ margin: '0 0 10px 0' }}>Sesion activa: <strong>{usuarioLogueado.nombre}</strong></p>
+              <button onClick={() => setUsuarioLogueado(null)} className="btn-danger">
                 Cerrar Sesion
               </button>
             </div>
           ) : modoRegistro ? (
-            <form onSubmit={manejarRegistro} style={{ display: 'grid', gap: '5px' }}>
+            <form onSubmit={manejarRegistro}>
               <h4>Crear Cuenta</h4>
-              <input type="text" placeholder="Tu Nombre" value={nombreInput} onChange={(e) => setNombreInput(e.target.value)} required style={{ padding: '5px' }} />
-              <input type="email" placeholder="Tu Correo" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required style={{ padding: '5px' }} />
-              <button type="submit" style={{ background: '#28a745', color: '#fff', border: 'none', padding: '5px', cursor: 'pointer' }}>Registrarse</button>
-              <button type="button" onClick={() => setModoRegistro(false)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', fontSize: '12px' }}>Ya tengo cuenta</button>
+              <input type="text" placeholder="Nombre completo" value={nombreInput} onChange={(e) => setNombreInput(e.target.value)} required />
+              <input type="email" placeholder="Correo electronico" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required />
+              <button type="submit" className="btn-primary">Registrarse</button>
+              <button type="button" onClick={() => setModoRegistro(false)} className="btn-secondary">Ya tengo cuenta</button>
             </form>
           ) : (
-            <form onSubmit={manejarLogin} style={{ display: 'grid', gap: '5px' }}>
+            <form onSubmit={manejarLogin}>
               <h4>Iniciar Sesion</h4>
-              <input type="email" placeholder="Ingresa tu correo" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required style={{ padding: '5px' }} />
-              <button type="submit" style={{ background: '#007bff', color: '#fff', border: 'none', padding: '5px', cursor: 'pointer' }}>Entrar</button>
-              <button type="button" onClick={() => setModoRegistro(true)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', fontSize: '12px' }}>Crear una cuenta</button>
+              <input type="email" placeholder="Correo electronico" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} required />
+              <button type="submit" className="btn-primary">Entrar</button>
+              <button type="button" onClick={() => setModoRegistro(true)} className="btn-secondary">Crear una cuenta</button>
             </form>
           )}
         </div>
       </header>
 
-      {/* Catálogo de Drones con Stock Fijo */}
       <section>
-        <h2>Catalogo Disponible</h2>
+        <h2 className="catalog-title">Catalogo Disponible</h2>
         {loading ? (
-          <p>Cargando drones...</p>
+          <p style={{ color: 'var(--text-muted)' }}>Cargando inventario...</p>
         ) : drones.length === 0 ? (
-          <p>No hay drones disponibles en este momento.</p>
+          <p style={{ color: 'var(--text-muted)' }}>No hay drones disponibles en este momento.</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+          <div className="grid-drones">
             {drones.map((dron) => (
-              <div key={dron.id || dron.id_dron} style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px', background: '#fff', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
-                <h3>{dron.nombre}</h3>
-                <p><strong>Modelo:</strong> {dron.modelo || 'N/A'}</p>
-                <p style={{ fontSize: '18px', color: '#28a745', fontWeight: 'bold' }}>${dron.precio}</p>
-                <button 
-                  onClick={() => comprarDron(dron)} 
-                  style={{ width: '100%', padding: '10px', background: '#ffc107', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', marginTop: '10px' }}>
-                  Comprar Dron
-                </button>
+              <div key={dron.id || dron.id_dron} className="card-dron">
+                <div className="dron-image-container">
+                  <img src={obtenerImagenDron(dron.nombre)} alt={dron.nombre} />
+                </div>
+                <div className="dron-info">
+                  <h3>{dron.nombre}</h3>
+                  <p>Modelo: {dron.modelo || 'Estandar'}</p>
+                  <div className="dron-footer">
+                    <span className="dron-precio">${dron.precio}</span>
+                    <button onClick={() => comprarDron(dron)} className="btn-comprar">
+                      Comprar
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
